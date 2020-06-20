@@ -1,0 +1,39 @@
+#!/bin/env python
+
+import sys
+import os
+from github import Github #Pygithub
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+project_name = sys.argv[1]
+
+#1 - move to the directory of interest
+os.chdir(os.path.join(os.getcwd(), 'projects'))
+#2 - create new directory with the name of the project
+os.mkdir(project_name)
+#3 - change directory to the newly created project
+os.chdir(os.path.join(os.getcwd(), project_name))
+#4 - create a README.md file
+with open('README.md', 'w') as file:
+    file.write(f'# {project_name}')
+#5 - initialize local git repo
+os.system('git init')
+#6 - add README.md to the staging area
+os.system('git add .')
+#7 - create first commit
+os.system('git commit -m "first commit"')
+#8 - create new github repo on my account
+g = Github(os.getenv('GITHUB_TOKEN'))
+my_user = g.get_user()
+my_user.create_repo(project_name, description=project_name)
+# for repo in my_user.get_repos():
+#     print(repo.name)
+#9 - add the remote repository to the local git
+os.system(f'git remote add origin https://github.com/M-Bohram/{project_name}.git')
+#10 - push the commit to the remote repo
+os.system('git push -u origin master')
+#11 - open visual studio code on that directory
+os.system('code .')
